@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧠 Explain My Code
 
-## Getting Started
+Un mini--proyecto pensado para una cosa muy simple:\
+**pegar código y entenderlo mejor.**
 
-First, run the development server:
+La idea es tener una interfaz liviana donde se pueda:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+-   Pegar cualquier fragmento de código\
+-   Enviarlo a una IA\
+-   Recibir una explicación clara\
+-   Detectar posibles problemas\
+-   Obtener sugerencias de mejora
+
+Ideal para aprender, revisar código viejo, entender snippets ajenos o simplemente validar lo que se escribio.
+
+------------------------------------------------------------------------
+
+## 🎯 Objetivo
+
+Crear una herramienta sencilla, barata y rápida que:
+
+-   Ayude a comprender código en segundos\
+-   Funcione como asistente de estudio\
+-   Sirva como base para futuras features (exportar, guardar, compartir,
+    etc.)\
+-   Sea un playground real para experimentar con IA + frontend moderno
+
+------------------------------------------------------------------------
+
+## 🛠 Tecnologías
+
+-   **Next.js (App Router)**
+-   **React**
+-   **TypeScript**
+-   **Tailwind CSS**
+-   **API Route (`/api/explain`)**
+-   **LLM (IA) vía API externa**
+-   **Arquitectura Server / Client Components**
+
+------------------------------------------------------------------------
+
+## 🧩 Arquitectura
+
+``` text
+UI (Client Component)
+        |
+        v
+/api/explain (Route Handler - Server)
+        |
+        v
+explainCode()
+        |
+        v
+LLM (IA)
+        |
+        v
+Parser / Validator
+        |
+        v
+ExplainResult (JSON tipado)
+        |
+        v
+UI renderiza resultado
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+-   El frontend solo se encarga de UX + estado.
+-   La API recibe el código, llama a la IA y devuelve un
+    `ExplainResult`.
+-   La respuesta cruda del modelo se valida, se parsea y se transforma.
+-   El cliente nunca habla directo con la IA (seguridad + control).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+------------------------------------------------------------------------
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🧪 Estado actual
 
-## Learn More
+-   UI funcional\
+-   Endpoint conectado a IA real\
+-   Parsing y validación de respuesta\
+-   Manejo de errores\
+-   Flujo completo end-to-end
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
