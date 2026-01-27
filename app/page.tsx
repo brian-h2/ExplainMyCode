@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { detectLanguage } from "./lib/detectLanguage";
+import { AIBubble } from "./ui/AIBubble";
+import { UserBubble } from "./ui/UserBubble";
 
 export default function Home() {
     // Set a state variable to hold the fetched data
@@ -19,7 +22,8 @@ export default function Home() {
             const res = await fetch("/api/explain", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ code, language }),
+                body: JSON.stringify({ code, language: language === "unknown" ? detectLanguage(code) : language }),
+                //Validate the language before sending if it's set to "unknown" 
             });
 
             // Check if the response is ok
@@ -38,96 +42,111 @@ export default function Home() {
     }
 
     return (
-         <main className="min-h-screen bg-slate-100 text-slate-900 flex items-center justify-center">
-          <div className="w-full max-w-xl p-6 bg-white rounded-xl shadow-lg space-y-4">
-            <h1 className="text-2xl font-bold">Explain my code</h1>
+         <main className="min-h-screen bg-slate-100 text-slate-900 flex flex-col items-center py-10 px-4">
+            <div className="w-full max-w-2xl space-y-6">
 
-            {/* Analyze code textarea */}
-            <textarea
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                className="w-full h-40 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Paste your code here..."
-                rows={10}
-                cols={50}
-                style={{ width: "100%", marginBottom: 12 }}
-            ></textarea>
+                {/* Chat Title */}
+                <h1 className="text-2xl font-bold text-center mb-4">Explain My Code</h1>
 
-            {/* Language selection dropdown */}
-            <select value={language} onChange={(e) => setLanguage(e.target.value)}>
-                <option value="javascript">JavaScript</option>
-                <option value="typescript">TypeScript</option>
-                <option value="python">Python</option>
-                <option value="csharp">C#</option>
-            </select>
+                {/* Chat Messages Area */}
+                <div>
 
-            <button onClick={handleAnalyze} disabled={loading} className="w-full py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition" style={{ marginLeft: 12 }}>
-                {loading ? "Analyzing..." : "Analyze Code"}
-            </button>
 
-            {error && <p style={{ color: "red" }}>{error}</p>}
-
-            {result && (
-                <div className="space-y-6">
+                {/* AI RESPONSES */}
+                {result && (
+                    <div className="space-y-4">
 
                     {/* 🧠 Explanation */}
-                    <section className="p-4 bg-slate-50 border rounded-lg">
-                    <h2 className="font-semibold text-lg mb-2">🧠 Explanation</h2>
-                    <p className="text-sm leading-relaxed">{result.explanation}</p>
-                    </section>
+                    <AIBubble>
+                        <h3 className="font-bold mb-1">🧠 Explanation</h3>
+                        <p className="text-sm leading-relaxed">
+                        {result.explanation}
+                        </p>
+                    </AIBubble>
 
                     {/* ⚠️ Issues */}
-                    <section className="p-4 bg-slate-50 border rounded-lg">
-                    <h2 className="font-semibold text-lg mb-2">⚠️ Issues</h2>
-
-                    {result.issues.length === 0 ? (
-                        <p className="text-sm text-slate-500">No issues detected 🎉</p>
-                    ) : (
-                        <ul className="space-y-2">
-                        {result.issues.map((issue, i) => (
-                            <li
-                            key={i}
-                            className="flex items-start gap-2 text-sm"
-                            >
-                            <span
-                                className={`px-2 py-0.5 rounded text-xs font-medium ${
-                                issue.severity === "high"
-                                    ? "bg-red-200 text-red-800"
-                                    : issue.severity === "medium"
-                                    ? "bg-yellow-200 text-yellow-800"
-                                    : "bg-green-200 text-green-800"
+                    <AIBubble>
+                        <h3 className="font-bold mb-1">⚠️ Issues</h3>
+                        {result.issues.length === 0 ? (
+                        <p className="text-sm text-slate-500">No issues found 🎉</p>
+                        ) : (
+                        <ul className="space-y-2 text-sm">
+                            {result.issues.map((i, idx) => (
+                            <li key={idx} className="flex gap-2 items-start">
+                                <span
+                                className={`px-2 py-0.5 text-xs rounded font-semibold ${
+                                    i.severity === "high"
+                                    ? "bg-red-200 text-red-900"
+                                    : i.severity === "medium"
+                                    ? "bg-yellow-200 text-yellow-900"
+                                    : "bg-green-200 text-green-900"
                                 }`}
-                            >
-                                {issue.severity}
-                            </span>
-
-                            <span>{issue.message}</span>
+                                >
+                                {i.severity}
+                                </span>
+                                <span>{i.message}</span>
                             </li>
-                        ))}
+                            ))}
                         </ul>
-                    )}
-                    </section>
+                        )}
+                    </AIBubble>
 
                     {/* 🚀 Improvements */}
-                    <section className="p-4 bg-slate-50 border rounded-lg">
-                    <h2 className="font-semibold text-lg mb-2">🚀 Improvements</h2>
-
-                    {result.improvements.length === 0 ? (
-                        <p className="text-sm text-slate-500">No improvements suggested.</p>
-                    ) : (
+                    <AIBubble>
+                        <h3 className="font-bold mb-1">🚀 Improvements</h3>
+                        {result.improvements.length === 0 ? (
+                        <p className="text-sm text-slate-500">
+                            No improvements suggested.
+                        </p>
+                        ) : (
                         <ul className="list-disc list-inside space-y-1 text-sm">
-                        {result.improvements.map((imp, i) => (
+                            {result.improvements.map((imp, i) => (
                             <li key={i}>{imp.message}</li>
-                        ))}
+                            ))}
                         </ul>
-                    )}
-                    </section>
+                        )}
+                    </AIBubble>
+
+                    </div>
+                )}
+                </div>
+
+                {/* INPUT AREA */}
+                <div className="p-4 bg-white border rounded-xl shadow space-y-4">
+
+                <textarea
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    className="w-full h-40 p-3 border rounded-md font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Paste your code here..."
+                />
+
+                <select
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value)}
+                    className="p-2 border rounded-md w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                    <option value="javascript">JavaScript</option>
+                    <option value="typescript">TypeScript</option>
+                    <option value="python">Python</option>
+                    <option value="csharp">C#</option>
+                    <option value="java">Java</option>
+                    <option value="unknown">Detect Automatically</option>
+                </select>
+
+                {error && <p className="text-red-600 text-sm">{error}</p>}
+
+                <button
+                    onClick={handleAnalyze}
+                    disabled={loading}
+                    className="w-full py-2 rounded-md bg-gray-600 text-white cursor-pointer hover:bg-gray-700 transition disabled:opacity-50"
+                >
+                    {loading ? "Analyzing..." : "Analyze Code"}
+                </button>
 
                 </div>
-                )
-            }
+            </div>
+            </main>
 
-          </div>
-        </main>
     )
 }
