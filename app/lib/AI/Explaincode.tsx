@@ -15,11 +15,12 @@ export default async function explainCode (
         throw new Error("Code parameter is required");
     }
 
+    console.log("Explaining code in language:", input.language);
+
     const prompt = BASE_EXPLAIN_PROMPT // Prepare the prompt by replacing placeholders
         .replace("{{language}}", input.language || "unknown") // Use "unknown" if language is not provided
         .replace("{{code}}", input.code); // Use the provided code
         
-    console.log("Generated prompt:", prompt);
 
     const completion = await client.chat.completions.create({ // Call the OpenAI API
         model: input.model ?? "openai/gpt-oss-120b",
