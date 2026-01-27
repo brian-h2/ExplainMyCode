@@ -117,14 +117,14 @@ export default function Home() {
                 <textarea
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    className="w-full h-40 p-3 border rounded-md font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full h-40 p-3 border rounded-md font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 "
                     placeholder="Paste your code here..."
                 />
 
                 <select
                     value={language}
                     onChange={(e) => setLanguage(e.target.value)}
-                    className="p-2 border rounded-md w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="p-2 border rounded-md w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 "
                 >
                     <option value="javascript">JavaScript</option>
                     <option value="typescript">TypeScript</option>
