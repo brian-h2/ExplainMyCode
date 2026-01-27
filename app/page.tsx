@@ -68,27 +68,65 @@ export default function Home() {
             {error && <p style={{ color: "red" }}>{error}</p>}
 
             {result && (
-                <section>
-                <h2>Explanation</h2>
-                <p>{result.explanation}</p>
+                <div className="space-y-6">
 
-                <h2>Issues</h2>
-                <ul>
-                    {result.issues.map((i, idx) => (
-                    <li key={idx}>
-                        [{i.severity}] {i.message}
-                    </li>
-                    ))}
-                </ul>
+                    {/* 🧠 Explanation */}
+                    <section className="p-4 bg-slate-50 border rounded-lg">
+                    <h2 className="font-semibold text-lg mb-2">🧠 Explanation</h2>
+                    <p className="text-sm leading-relaxed">{result.explanation}</p>
+                    </section>
 
-                <h2>Improvements</h2>
-                <ul>
-                    {result.improvements.map((i, idx) => (
-                    <li key={idx}>{i.message}</li>
-                    ))}
-                </ul>
-                </section>
-            )}
+                    {/* ⚠️ Issues */}
+                    <section className="p-4 bg-slate-50 border rounded-lg">
+                    <h2 className="font-semibold text-lg mb-2">⚠️ Issues</h2>
+
+                    {result.issues.length === 0 ? (
+                        <p className="text-sm text-slate-500">No issues detected 🎉</p>
+                    ) : (
+                        <ul className="space-y-2">
+                        {result.issues.map((issue, i) => (
+                            <li
+                            key={i}
+                            className="flex items-start gap-2 text-sm"
+                            >
+                            <span
+                                className={`px-2 py-0.5 rounded text-xs font-medium ${
+                                issue.severity === "high"
+                                    ? "bg-red-200 text-red-800"
+                                    : issue.severity === "medium"
+                                    ? "bg-yellow-200 text-yellow-800"
+                                    : "bg-green-200 text-green-800"
+                                }`}
+                            >
+                                {issue.severity}
+                            </span>
+
+                            <span>{issue.message}</span>
+                            </li>
+                        ))}
+                        </ul>
+                    )}
+                    </section>
+
+                    {/* 🚀 Improvements */}
+                    <section className="p-4 bg-slate-50 border rounded-lg">
+                    <h2 className="font-semibold text-lg mb-2">🚀 Improvements</h2>
+
+                    {result.improvements.length === 0 ? (
+                        <p className="text-sm text-slate-500">No improvements suggested.</p>
+                    ) : (
+                        <ul className="list-disc list-inside space-y-1 text-sm">
+                        {result.improvements.map((imp, i) => (
+                            <li key={i}>{imp.message}</li>
+                        ))}
+                        </ul>
+                    )}
+                    </section>
+
+                </div>
+                )
+            }
+
           </div>
         </main>
     )
