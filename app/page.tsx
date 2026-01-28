@@ -4,6 +4,7 @@ import { useState } from "react";
 import { detectLanguage } from "./lib/detectLanguage";
 import { AIBubble } from "./ui/AIBubble";
 import { UserBubble } from "./ui/UserBubble";
+import SelectLanguage from "./ui/SelectLanguage";
 
 export default function Home() {
     // Set a state variable to hold the fetched data
@@ -16,6 +17,12 @@ export default function Home() {
     async function handleAnalyze() {
         setLoading(true);
         setError(null);
+
+        if(!code.trim()) {
+            setError("Please enter some code to analyze.");
+            setLoading(false);
+            return;
+        }
 
         try {
             // Make the API request whit the user-provided code and language
@@ -50,7 +57,6 @@ export default function Home() {
 
                 {/* Chat Messages Area */}
                 <div>
-
 
                 {/* AI RESPONSES */}
                 {result && (
@@ -117,22 +123,15 @@ export default function Home() {
                 <textarea
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    className="w-full h-40 p-3 border rounded-md font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 "
+                    className="w-full h-40 p-3 border rounded-md font-mono text-sm focus:outline-none focus:ring-0 focus:ring-blue-500 "
                     placeholder="Paste your code here..."
                 />
 
-                <select
+                <SelectLanguage
                     value={language}
-                    onChange={(e) => setLanguage(e.target.value)}
-                    className="p-2 border rounded-md w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 "
-                >
-                    <option value="javascript">JavaScript</option>
-                    <option value="typescript">TypeScript</option>
-                    <option value="python">Python</option>
-                    <option value="csharp">C#</option>
-                    <option value="java">Java</option>
-                    <option value="unknown">Detect Automatically</option>
-                </select>
+                    onChange={setLanguage}
+                >               
+                </SelectLanguage>
 
                 {error && <p className="text-red-600 text-sm">{error}</p>}
 
