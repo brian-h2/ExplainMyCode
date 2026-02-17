@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { detectLanguage } from "./lib/detectLanguage";
 import { AIBubble } from "./ui/AIBubble";
-import { UserBubble } from "./ui/UserBubble";
 import SelectLanguage from "./ui/SelectLanguage";
+import HistoryChats from "./ui/HistoryChats";
 
 export default function Home() {
     // Set a state variable to hold the fetched data
@@ -38,8 +38,11 @@ export default function Home() {
                 throw new Error(`Error: ${res.status} ${res.statusText}`);
             }
 
-            const data = await res.json();
-            setResult(data);
+            const response = await res.json();
+            
+            // This set can move to the routeHistory for handle best practices and analytics, but for now we can set it here after get the response from the explain route
+            //Set the result in prisma database for future reference and analytics
+            setResult(response);
             setLoading(false);
         } catch (e) {
             setError("Something went wrong analyzing your code.");
@@ -57,6 +60,8 @@ export default function Home() {
 
                 {/* Chat Messages Area */}
                 <div>
+                    
+                <HistoryChats onSelect={(item) => setResult(item)} />
 
                 {/* AI RESPONSES */}
                 {result && (
