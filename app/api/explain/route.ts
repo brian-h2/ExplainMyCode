@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import explainCode from "@/app/lib/AI/Explaincode"; // Recordatory import statement
+import prisma from "@/app/lib/Prisma";
 
 export async function POST(request: Request) {
 
@@ -16,6 +17,15 @@ export async function POST(request: Request) {
         model: "openai/gpt-oss-120b"
       }) 
 
+      await prisma.chatEntry.create({
+         data: {
+          code: body.code,
+          explanation: resultExplain.explanation,
+          issues: resultExplain.issues,
+          improvements: resultExplain.improvements,
+        },
+      });
+
       return NextResponse.json({
         ...resultExplain
       }, 
@@ -26,6 +36,8 @@ export async function POST(request: Request) {
     console.error("Error processing request:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
+
+
 
   //   const response = {
   //   id: crypto.randomUUID(),

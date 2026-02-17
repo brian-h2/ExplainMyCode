@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { detectLanguage } from "./lib/detectLanguage";
 import { AIBubble } from "./ui/AIBubble";
-import { UserBubble } from "./ui/UserBubble";
+import SelectLanguage from "./ui/SelectLanguage";
+import HistoryChats from "./ui/HistoryChats";
 
 export default function Home() {
     // Set a state variable to hold the fetched data
@@ -16,6 +17,12 @@ export default function Home() {
     async function handleAnalyze() {
         setLoading(true);
         setError(null);
+
+        if(!code.trim()) {
+            setError("Please enter some code to analyze.");
+            setLoading(false);
+            return;
+        }
 
         try {
             // Make the API request whit the user-provided code and language
@@ -31,8 +38,11 @@ export default function Home() {
                 throw new Error(`Error: ${res.status} ${res.statusText}`);
             }
 
-            const data = await res.json();
-            setResult(data);
+            const response = await res.json();
+            
+            // This set can move to the routeHistory for handle best practices and analytics, but for now we can set it here after get the response from the explain route
+            //Set the result in prisma database for future reference and analytics
+            setResult(response);
             setLoading(false);
         } catch (e) {
             setError("Something went wrong analyzing your code.");
@@ -50,7 +60,8 @@ export default function Home() {
 
                 {/* Chat Messages Area */}
                 <div>
-
+                    
+                <HistoryChats onSelect={(item) => setResult(item)} />
 
                 {/* AI RESPONSES */}
                 {result && (
@@ -117,22 +128,15 @@ export default function Home() {
                 <textarea
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    className="w-full h-40 p-3 border rounded-md font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full h-40 p-3 border rounded-md font-mono text-sm focus:outline-none focus:ring-0 focus:ring-blue-500 "
                     placeholder="Paste your code here..."
                 />
 
-                <select
+                <SelectLanguage
                     value={language}
-                    onChange={(e) => setLanguage(e.target.value)}
-                    className="p-2 border rounded-md w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    <option value="javascript">JavaScript</option>
-                    <option value="typescript">TypeScript</option>
-                    <option value="python">Python</option>
-                    <option value="csharp">C#</option>
-                    <option value="java">Java</option>
-                    <option value="unknown">Detect Automatically</option>
-                </select>
+                    onChange={setLanguage}
+                >               
+                </SelectLanguage>
 
                 {error && <p className="text-red-600 text-sm">{error}</p>}
 

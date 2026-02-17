@@ -5,8 +5,6 @@ export function detectLanguage(code: string): Language {
 
     const codeLower = code.toLowerCase();
 
-    console.log('Detecting language for code:', codeLower);
-
     if(
         codeLower.includes("import ") ||
         codeLower.includes("console.log") ||
