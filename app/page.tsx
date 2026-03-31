@@ -14,6 +14,7 @@ export default function Home() {
     const [error, setError] = useState<string | null>(null);
     const [currentId, setCurrentId] = useState<string | null>(null);
     const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -61,6 +62,7 @@ export default function Home() {
     }
 
     const handleNewChat = () => {
+        setRefreshTrigger(prev => prev + 1); // dispara el refetch
         setResult(null);
         setCode("");
         setError(null);
@@ -87,6 +89,7 @@ export default function Home() {
 
                 {/* ── Sidebar: real HistoryChats component ── */}
                 <HistoryChats
+                    refreshTrigger={refreshTrigger}  // 👈
                     onSelect={handleSelect}
                     onNewChat={handleNewChat}
                     currentId={currentId}

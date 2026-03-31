@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { MessageSquare, Plus, Clock } from "lucide-react";
 
 export default function HistoryChats({
+    refreshTrigger,
     onSelect,
     onNewChat,
     currentId,
@@ -11,15 +12,20 @@ export default function HistoryChats({
     onSelect: (item: any) => void;
     onNewChat: () => void;
     currentId?: string | null;
+    refreshTrigger?: number;
 }) {
     const [history, setHistory] = useState<any[]>([]);
 
-    useEffect(() => {
+   const fetchHistory = () => {
         fetch("/api/history")
             .then((res) => res.json())
-            .then((data) => setHistory(data))
+            .then((data) => setHistory(Array.isArray(data) ? data : []))
             .catch((error) => console.error("Error fetching history:", error));
-    }, []);
+    };
+
+    useEffect(() => {
+        fetchHistory();
+    }, [refreshTrigger]);
 
     return (
         <aside className="w-72 flex-shrink-0 flex flex-col bg-slate-800/40 backdrop-blur-xl rounded-3xl shadow-2xl border border-purple-500/20 overflow-hidden">
